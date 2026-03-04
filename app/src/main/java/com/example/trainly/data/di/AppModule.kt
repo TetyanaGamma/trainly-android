@@ -3,6 +3,7 @@ import androidx.room.Room
 import com.example.trainly.data.local.TrainlyDatabase
 import com.example.trainly.data.repository.ClientRepositoryImpl
 import com.example.trainly.domain.repo.ClientRepository
+import com.example.trainly.presentation.client_form.ClientFormViewModel
 import com.example.trainly.presentation.client_list.ClientListViewModel
 import com.example.trainly.presentation.client_profile.ClientProfileViewModel
 import org.koin.android.ext.koin.androidContext
@@ -22,13 +23,18 @@ val appModule = module {
     }
 
     single { get<TrainlyDatabase>().clientDao() }
+    single { get<TrainlyDatabase>().anamnesisDao() }
 
     // Repository: linking the Interface to its Implementation
-    single<ClientRepository> { ClientRepositoryImpl(get()) }
+    single<ClientRepository> { ClientRepositoryImpl(
+        clientDao = get(),
+        anamnesisDao = get()) }
 
     // ViewModel
     viewModel { ClientListViewModel(get()) }
     viewModel { (clientId: String) ->
         ClientProfileViewModel(repository = get(), clientId = clientId)
     }
+    viewModel { (clientId: String) ->
+        ClientFormViewModel (repository = get(), clientId = clientId) }
 }
